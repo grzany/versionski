@@ -31,7 +31,7 @@ func NewConfig() (*Config, error) {
 
 func initViper() (Constants, error) {
 	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("../")
 	err := viper.ReadInConfig()
 	if err != nil {
 		return Constants{}, err

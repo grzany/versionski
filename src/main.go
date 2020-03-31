@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
-	"github.com/grzany/versionski/config"
-	"github.com/grzany/versionski/versionski"
+	"github.com/grzany/versionski/src/tools"
+	"github.com/grzany/versionski/src/versionski"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 	if err != nil {
 		log.Panicln("Configuration error", err)
 	}
-	router := Routes(configuration)
+	router := versionski.Routes(configuration)
 
 	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
 		log.Printf("%s %s\n", method, route) // Walk and print out all routes
