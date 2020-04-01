@@ -1,15 +1,15 @@
-package versionski
+package app
 
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
-	handlers "github.com/grzany/versionski/src/handlers"
-	tools "github.com/grzany/versionski/src/tools"
+	"github.com/grzany/versionski/config"
+	"github.com/grzany/versionski/handler"
 )
 
 //Routes sets up all routes for the server
-func Routes(configuration *tools.Config) *chi.Mux {
+func Routes(configuration *config.Config) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(
 		render.SetContentType(render.ContentTypeJSON), // Set content-Type headers as application/json
@@ -20,7 +20,7 @@ func Routes(configuration *tools.Config) *chi.Mux {
 	)
 
 	router.Route("/api", func(r chi.Router) {
-		r.Mount("/common", handlers.Routes(configuration))
+		r.Mount("/common", handler.Routes(configuration))
 	})
 
 	return router
