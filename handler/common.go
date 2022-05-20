@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"github.com/grzany/versionski/checker"
 	"github.com/grzany/versionski/config"
 )
 
@@ -32,7 +34,39 @@ func GetDefaultRoute(conf *config.Config) http.HandlerFunc {
 func GetConfig(conf *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response := make(map[string]string)
-		response["Przywitanie"] = "Hello Adam, Hi there dude"
+		githubTag := &checker.GithubTag{
+			Owner:      "kubernetes",
+			Repository: "kubernetes",
+		}
+		res, err := Check(githubTag, "cos")
+		if err != nil {
+			fmt.Printf("GitHub API Url invalid: %s", err)
+		}
+		response[githubTag.Repository] = res.Current
 		render.JSON(w, r, response)
 	}
+}
+
+// Check fetches last version information from its source
+// and compares with target and return result (CheckResponse).
+func Check(s checker.Source, target string) (*checker.CheckResponse, error) {
+
+	// Validate source
+	if err := s.Validate(); err != nil {
+		return nil, err
+	}
+
+	fr, err := s.Fetch()
+	if err != nil {
+		return nil, err
+	}
+
+	// Source must has at leaset one version information
+	current := fr.Version
+
+	return &checker.CheckResponse{
+		Current:  current,
+		Outdated: false,
+		Latest:   false,
+	}, nil
 }

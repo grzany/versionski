@@ -22,6 +22,8 @@ func Routes(configuration *config.Config) *chi.Mux {
 	router.Route("/api", func(r chi.Router) {
 		r.Mount("/common", handler.Routes(configuration))
 	})
-
+	router.Route("/api2", func(r chi.Router) {
+		r.Mount("/", handler.Routes(configuration))
+	})
 	return router
 }

@@ -1,4 +1,4 @@
-package github
+package checker
 
 import (
 	"context"
@@ -8,14 +8,15 @@ import (
 	"github.com/google/go-github/github"
 )
 
-/*func main() {
+/*
+func main() {
 	githubTag := &GithubTag{
 		Owner:      "kubernetes",
 		Repository: "kops",
 	}
 	githubTag.Fetch()
-}
-*/
+} */
+
 // GithubTag is used to fetch version(tag) information from Github.
 type GithubTag struct {
 	// Owner and Repository are GitHub owner name and its repository name.
@@ -25,8 +26,9 @@ type GithubTag struct {
 	Repository string
 
 	// URL & Token is used for GitHub Enterprise
-	URL   string
-	Token string
+	URL       string
+	Token     string
+	LatestTag string
 }
 
 func (g *GithubTag) newClient() *github.Client {
@@ -56,7 +58,7 @@ func (g *GithubTag) Validate() error {
 	return nil
 }
 
-func (g *GithubTag) Fetch() {
+func (g *GithubTag) Fetch() (*FetchResponse, error) {
 
 	//fr := newFetchResponse()
 
@@ -83,8 +85,12 @@ func (g *GithubTag) Fetch() {
 
 	return fr, nil
 	*/
+	g.LatestTag = *latest.TagName
 	fmt.Println(*latest.TagName)
 	//for _, tag := range tags {
 	//		fmt.Println("Tag: ", *tag.Name)
 	//	}
+	return &FetchResponse{
+		Version: g.LatestTag,
+	}, nil
 }
