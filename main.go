@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/grzany/versionski/app"
 	"github.com/grzany/versionski/config"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 		log.Panicln("Configuration error", err)
 	}
 	router := app.Routes(configuration)
+	router.Mount("/metrics", promhttp.Handler())
 
 	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
 		log.Printf("%s %s\n", method, route) // Walk and print out all routes
