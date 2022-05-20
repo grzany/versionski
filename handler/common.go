@@ -2,10 +2,20 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/grzany/versionski/config"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+)
+
+var (
+	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "myapp_processed_ops_total",
+		Help: "The total number of processed events",
+	})
 )
 
 //Routes defines routes for common handler under /v1/api/common
@@ -17,6 +27,21 @@ func Routes(conf *config.Config) *chi.Mux {
 	router.Get("/", GetDefaultRoute(conf))
 	router.Get("/config", GetConfig(conf))
 	return router
+}
+
+func PromRoutes(conf *config.Config) *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/ops", RecordMetrics())
+	return router
+}
+
+func RecordMetrics() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		for {
+			opsProcessed.Inc()
+			time.Sleep(2 * time.Second)
+		}
+	}
 }
 
 //GetDefaultRoute implements / route
