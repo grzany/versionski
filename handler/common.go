@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -29,6 +30,18 @@ func Routes(conf *config.Config) *chi.Mux {
 	router.Get("/", GetDefaultRoute(conf))
 	router.Get("/config", GetConfig(conf))
 	return router
+}
+func VarsRoutes(conf *config.Config) *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/",GetVars())
+	return router
+}
+func GetVars() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) { 
+		response := make(map[string]string)
+		response["secret"] = os.Getenv("VSCODE_GIT_ASKPASS_MAIN")
+		render.JSON(w, r, response)
+	}
 }
 
 func PromRoutes(conf *config.Config) *chi.Mux {

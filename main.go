@@ -28,4 +28,7 @@ func main() {
 
 	log.Println("Serving application at PORT :" + configuration.Constants.PORT)
 	log.Fatal(http.ListenAndServe(":"+configuration.Constants.PORT, router)) //
+	// Serve metrics.
+	log.Printf("serving metrics at: %s", ":9090")
+	go http.ListenAndServe(":9090", promhttp.Handler())
 }
